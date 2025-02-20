@@ -1,3 +1,29 @@
+-- HWID Protection
+local function GetHWID()
+    local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+    return hwid
+end
+
+local whitelist = {
+    "de0e4c22-9625-4392-9d28-cee62cd05dc4",
+    "CE673725-7B4C-475F-AAAA-257C74BDCCB0"
+}
+
+local hwid = GetHWID()
+local whitelisted = false
+
+for _, id in ipairs(whitelist) do
+    if hwid == id then
+        whitelisted = true
+        break
+    end
+end
+
+if not whitelisted then
+    game.Players.LocalPlayer:Kick("\nHWID Not Whitelisted!\nContact 25beams for access.")
+    return
+end
+
 local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/UI-Libraries/main/Mercury-lib/source.lua"))()
 
 -- Core Services
@@ -28,7 +54,7 @@ local function blockPurchasePrompts()
 end
 
 local GUI = Mercury:Create{
-    Name = "Game GUI",
+    Name = "Drill Simulator",
     Size = UDim2.fromOffset(600, 400),
     Theme = Mercury.Themes.Dark,
     Link = "https://github.com/GhostDuckyy/UI-Libraries"
@@ -36,7 +62,7 @@ local GUI = Mercury:Create{
 
 -- Create Tabs
 local mainTab = GUI:Tab{
-    Name = "Main Features",
+    Name = "Auto Hatch",
     Icon = "rbxassetid://4483345998"
 }
 
@@ -91,21 +117,59 @@ mainTab:Toggle{
     end
 }
 
--- Win Farm Button
-farmingTab:Button{
-    Name = "Get 70 Wins",
-    Description = "Instantly receive 70 wins",
-    Callback = function()
-        for i = 1, 70 do
-            game:GetService("ReplicatedStorage"):WaitForChild("GiveWin"):FireServer()
-            wait(0.1)
+-- Custom Wins Input Box
+farmingTab:TextBox{
+    Name = "Get Custom Wins",
+    Description = "Enter amount of wins you want",
+    Callback = function(text)
+        local amount = tonumber(text)
+        if amount then
+            for i = 1, amount do
+                game:GetService("ReplicatedStorage"):WaitForChild("GiveWin"):FireServer()
+                wait(0.1)
+            end
+            GUI:Notification{
+                Title = "Success",
+                Text = "Added " .. amount .. " wins!",
+                Duration = 3,
+                Theme = "Success"
+            }
+        else
+            GUI:Notification{
+                Title = "Error",
+                Text = "Please enter a valid number",
+                Duration = 3,
+                Theme = "Error"
+            }
         end
-        GUI:Notification{
-            Title = "Success",
-            Text = "Successfully added 70 wins!",
-            Duration = 3,
-            Theme = "Success"
-        }
+    end
+}
+
+-- Cash Input Box
+farmingTab:TextBox{
+    Name = "Get Cash",
+    Description = "Enter amount of cash you want",
+    Callback = function(text)
+        local amount = tonumber(text)
+        if amount then
+            local args = {
+                [1] = amount
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("GiveCash"):FireServer(unpack(args))
+            GUI:Notification{
+                Title = "Success",
+                Text = "Added $" .. amount .. " to your account!",
+                Duration = 3,
+                Theme = "Success"
+            }
+        else
+            GUI:Notification{
+                Title = "Error",
+                Text = "Please enter a valid number",
+                Duration = 3,
+                Theme = "Error"
+            }
+        end
     end
 }
 
@@ -133,8 +197,8 @@ mainTab:Toggle{
 }
 
 farmingTab:Credit{
-    Name = "Made by Your Name",
-    Description = "Enjoy the script!",
+    Name = "Made by 25beams",
+    Description = "Enjoy the script ^_^",
 }
 
 -- Initial block of purchase prompts
