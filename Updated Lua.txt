@@ -1,0 +1,223 @@
+-- HWID Protection
+local function GetHWID()
+    local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+    return hwid
+end
+
+local whitelist = {
+    "de0e4c22-9625-4392-9d28-cee62cd05dc4",
+    "CE673725-7B4C-475F-AAAA-257C74BDCCB0"
+}
+
+local hwid = GetHWID()
+local whitelisted = false
+
+for _, id in ipairs(whitelist) do
+    if hwid == id then
+        whitelisted = true
+        break
+    end
+end
+
+if not whitelisted then
+    game.Players.LocalPlayer:Kick("\nHWID Not Whitelisted!\nContact 25beams for access.")
+    return
+end
+
+local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/UI-Libraries/main/Mercury-lib/source.lua"))()
+
+-- Core Services
+local CoreGui = game:GetService("CoreGui")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+-- Variables
+local selectedEgg = "Beach Egg"  -- Default egg
+local eggTypes = {
+    "Beach Egg",
+    "Oceanic Egg",
+    "Lava Egg"
+}
+
+-- Block purchase prompts function
+local function blockPurchasePrompts()
+    if gethui then
+        for _, gui in pairs(gethui():GetChildren()) do
+            if gui.Name == "PurchasePrompt" then
+                gui.Enabled = false
+            end
+        end
+    end
+    
+    if CoreGui:FindFirstChild("PurchasePrompt") then
+        CoreGui.PurchasePrompt.Enabled = false
+    end
+end
+
+local GUI = Mercury:Create{
+    Name = "Drill Simulator",
+    Size = UDim2.fromOffset(600, 400),
+    Theme = Mercury.Themes.Dark,
+    Link = "https://github.com/GhostDuckyy/UI-Libraries"
+}
+
+-- Create Tabs
+local mainTab = GUI:Tab{
+    Name = "Auto Hatch",
+    Icon = "rbxassetid://4483345998"
+}
+
+local farmingTab = GUI:Tab{
+    Name = "Farming",
+    Icon = "rbxassetid://4483345998"
+}
+
+local antiAfkTab = GUI:Tab{
+    Name = "Anti-AFK",
+    Icon = "rbxassetid://4483345998"
+}
+
+-- Egg Selection Dropdown
+mainTab:Dropdown{
+    Name = "Select Egg",
+    StartingText = "Select an egg...",
+    Description = "Choose which egg to auto-hatch",
+    Items = eggTypes,
+    Callback = function(item)
+        selectedEgg = item
+        GUI:Notification{
+            Title = "Egg Selected",
+            Text = "Now hatching: " .. item,
+            Duration = 2,
+            Theme = "Success"
+        }
+    end
+}
+
+-- Auto Egg Toggle
+local eggToggle = false
+local wait_time = 0.1
+
+mainTab:Toggle{
+    Name = "Auto Hatch Eggs",
+    StartingState = false,
+    Description = "Automatically hatches 30 eggs at once",
+    Callback = function(state)
+        eggToggle = state
+        if state then
+            blockPurchasePrompts()
+            spawn(function()
+                while eggToggle do
+                    blockPurchasePrompts()
+                    local args = {
+                        [1] = selectedEgg,
+                        [2] = 30
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("KPets"):WaitForChild("Events"):WaitForChild("Hatch"):FireServer(unpack(args))
+                    wait(wait_time)
+                end
+            end)
+        end
+    end
+}
+
+-- Custom Wins Input Box
+farmingTab:TextBox{
+    Name = "Get Custom Wins",
+    Description = "Enter amount of wins you want",
+    Callback = function(text)
+        local amount = tonumber(text)
+        if amount then
+            for i = 1, amount do
+                game:GetService("ReplicatedStorage"):WaitForChild("GiveWin"):FireServer()
+                wait(0.1)
+            end
+            GUI:Notification{
+                Title = "Success",
+                Text = "Added " .. amount .. " wins!",
+                Duration = 3,
+                Theme = "Success"
+            }
+        else
+            GUI:Notification{
+                Title = "Error",
+                Text = "Please enter a valid number",
+                Duration = 3,
+                Theme = "Error"
+            }
+        end
+    end
+}
+
+-- Cash Input Box
+farmingTab:TextBox{
+    Name = "Get Cash",
+    Description = "Enter amount of cash you want",
+    Callback = function(text)
+        local amount = tonumber(text)
+        if amount then
+            local args = {
+                [1] = amount
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("GiveCash"):FireServer(unpack(args))
+            GUI:Notification{
+                Title = "Success",
+                Text = "Added $" .. amount .. " to your account!",
+                Duration = 3,
+                Theme = "Success"
+            }
+        else
+            GUI:Notification{
+                Title = "Error",
+                Text = "Please enter a valid number",
+                Duration = 3,
+                Theme = "Error"
+            }
+        end
+    end
+}
+
+-- Hatch Speed Slider
+mainTab:Slider{
+    Name = "Egg Hatch Delay",
+    Default = 0.1,
+    Min = 0.1,
+    Max = 2,
+    Increment = 0.1,
+    ValueName = "seconds",
+    Callback = function(value)
+        wait_time = value
+    end
+}
+
+-- Anti-AFK Toggle
+antiAfkTab:Toggle{
+    Name = "Anti-AFK",
+    StartingState = false,
+    Description = "Prevents you from being kicked for idling",
+    Callback = function(state)
+        if state then
+            spawn(function()
+                local VirtualUser = game:GetService("VirtualUser")
+                while wait(10) do
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end
+            end)
+        end
+    end
+}
+
+farmingTab:Credit{
+    Name = "Made by 25beams",
+    Description = "Enjoy the script ^_^",
+}
+
+-- Initial block of purchase prompts
+blockPurchasePrompts()
+
+-- Connect to child added event to block future prompts
+CoreGui.ChildAdded:Connect(function(child)
+    if child.Name == "PurchasePrompt" then
+        child.Enabled = false
+    end
+end)
