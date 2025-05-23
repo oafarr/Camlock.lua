@@ -1,0 +1,58 @@
+local items = {
+    Shirts = {
+        "Amiri Halloween Shirt", "Amiri Jean Jacket", "Amiri Star Hoodie", "Amiri Varsity Jacket",
+        "Balmain Hoodie", "Bandi T Cardi", "Bathing Ape Bape Camo", "Black & Blue LA Designer Hoodie White Shirt",
+        "Black & White Designer Baseball Jersey", "Black Amiri Denim love jacket", "Black Amiri Star",
+        "Black Bapestar sweater", "Black Chrome Heart Zip Up", "Black Greedy Unit Complexcon Zip Up",
+        "Black PalmAngel Jacket", "Black Sp5der Jeffery Hoodie", "Black Tatted T Shirt", "Blue ChromeHeart Jersey",
+        "Blue Chrome Hearts Hoodiey", "Blue Hellstar", "Blue Sp5der Hoodie", "Blue and White Chicago OBLOCK Shirt W Tatts",
+        "BluePalm Jacket", "BlueTech", "Blu C Amiri Hoodie", "Blu Moncler", "Brown Glo hartt Work",
+        "Brown and Red Miracle Zipped Hoodie", "Bzz Blue Hoodie", "ChromeHeart Blue", "Green Sp5der Hoodie",
+        "Green Varsity", "GreenTech1", "Grey & Red Designer 999 Denim Jean Jacket", "Grey Amiri Hoodie",
+        "Grey Hoodie Wit Red", "Moose Grey Hoodie", "Moncler Tatted Open Shirt", "Navy Blue & Red Sp5der Beluga Hoodie",
+        "Opened Black Zipper Jacket W Tats", "PastalBlue Jcaket", "Pink Bape", "Pink Y2K", "Polo Black Moncler + Tats",
+        "Purple B Puffer", "Purple and Yellow GHOP Hoodie", "Red B Jacket", "Red Sp5der Sweats", "Red Zipped Jacket",
+        "Red and White Designer Graphic Shirt W Tatts", "SkyBlue Y2k", "Spiderman", "Tan Brown Graphic Y2K Pullover Hoodie",
+        "Tan Mechanic X", "TankTop Wit Black", "TankTop Wit Blue B", "TankTop Wit RedFlag", "Tatted Tank To[",
+        "White Balmain Hoodie", "White Polo Vest", "White Tatted T shirt", "White Tank Top W/ Shirt on shoulder",
+        "White and Black Sniper Gang Superstar Shirt", "WhiteTankTop", "Xunners Yankee W Tattoo",
+        "Yellow & White Striped Lightning Track Suit", "Yellow Spider Supreme Zip Up Jacket", "Y2K Brown & Tan STARS Varsity",
+        "Zipped Moncler Black"
+    },
+    Pants = {
+        "Aged Black Red Suede MX1 Jeans w Metalic 5s", "Amiri Bandana MX1 Jeans w Yellow Thunder 4s", "Amiri Blue Jeans",
+        "Amiri Indigo Suede Jeans w Yellow Thunder 4s", "Amiri Jean x Retro 13 x LV", "Amiri Jeans w Red Thunder",
+        "Amiri Jeans x Grey b22", "Amiri Jeans x Grey b22", "BabyBlue Nikes", "Balmain Grey Jeans Wit/ PSD’s Jordan 11s",
+        "BJeans w White Black Cat 4s", "Black & Tan Y2K Designer Graphic Joggers", "Black Amiri Jeans B22",
+        "Black PURPLE Brand Jeans w/ Balenciaga Runners", "Black PalmAngels", "Black Ripped Jeans",
+        "Black and White Designer Denim Jeans", "Black amiri jeans w yeezy", "Black B Shorts", "BlackJeans W Purple LV Flags",
+        "Blue ChromeHeart Varisty Shorts", "Blue Offwhites wit GreyJeans", "Blue Sp5der Sweats", "Blue Sp5der Sweats",
+        "BluePalm Jacket", "BluePalmAngels", "BlueTechPants", "Dark Grey Lambskin MX1 Jeans w Timbs", "Green Ripped Jeans",
+        "Green Sp5der Sweats", "GreenTechPants1", "Grey & Yellow Designer Denim Jeans W Belt", "Grey Jean W Dior Runners",
+        "Grey Jeans W/ Red Jz", "Grey Purple Jeans", "Grey Sweats W Red", "GreyTechPants", "Hard Jeans LV",
+        "Pink Bapesta Jeans", "Purple Brand Jeans w Balenciaga Graffiti", "Purple Brand Jeans x Lavins", "ReddyPants",
+        "Red And Black Checkered CheckMate Joggers", "Red B Shorts", "Red Designer Denim Jeans Drip Designer",
+        "Red Sp5der Sweats", "RedTech", "Ripped Black Jeans w White Thunder 4s", "Ripped Jeans W/ Blue",
+        "Saint Sinner Jeans", "Shorts W Dunks", "Spiderman", "Sweats Wit Black AF1", "Tan Machanic Pants Black AF1",
+        "Violet Valk Purple Designer Denim Jeanss", "White Jeans w AF1", "WhiteJeans", "WhiteTechPants",
+        "White AF1 BJeans", "Y2K Brown & Tan STARS Sweat Joggers", "Y2K Khaki pants"
+    },
+    Glasses = {
+        "BlackShades", "BluShades", "DarkShades", "Glasses", "PinkShades", "RedShades"
+    },
+    Shiestys = {
+        "BluShiesty", "PinkShiesty", "RedShiesty", "Shiesty", "ShiestyBlu", "ShiestyDesign", "ShiestyRed", "WhiteShiesty", "YelloShiesty"
+    },
+    Masks = {
+        "MacReddy", "MaskH", "SkullMask"
+    }
+}
+
+local remote = game:GetService("ReplicatedStorage"):WaitForChild("ClothShopRemote")
+
+for category, itemList in pairs(items) do
+    for _, itemName in ipairs(itemList) do
+        remote:FireServer("Buy", category, itemName)
+        task.wait(0.1)
+    end
+end
